@@ -9,7 +9,7 @@ class EmailService {
             let success = createEmailInMailApp(
                 to: recipient.email,
                 subject: "Message for \(recipient.name)",
-                body: personalizeMesage(recipient.message, for: recipient.name)
+                body: personalizeMessage(recipient.message, for: recipient.name)
             )
             results.append(success)
         }
@@ -17,7 +17,7 @@ class EmailService {
         return results
     }
     
-    private func personalizeMesage(_ message: String, for name: String) -> String {
+    private func personalizeMessage(_ message: String, for name: String) -> String {
         return message.replacingOccurrences(of: "{{name}}", with: name)
     }
     
