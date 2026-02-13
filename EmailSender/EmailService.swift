@@ -2,19 +2,28 @@ import Foundation
 import AppKit
 
 class EmailService {
-    func sendEmails(to recipients: [Recipient]) -> [Bool] {
+    func sendEmails(to recipients: [Recipient], completion: @escaping ([Bool]) -> Void) {
         var results: [Bool] = []
         
-        for recipient in recipients {
-            let success = createEmailInMailApp(
-                to: recipient.email,
-                subject: "Message for \(recipient.name)",
-                body: personalizeMessage(recipient.message, for: recipient.name)
-            )
-            results.append(success)
+        // Send emails asynchronously to avoid blocking the UI
+        DispatchQueue.global(qos: .userInitiated).async {
+            for recipient in recipients {
+                let success = self.createEmailInMailApp(
+                    to: recipient.email,
+                    subject: "Message for \(recipient.name)",
+                    body: self.personalizeMessage(recipient.message, for: recipient.name)
+                )
+                results.append(success)
+                
+                // Small delay to prevent overwhelming the system
+                Thread.sleep(forTimeInterval: 0.5)
+            }
+            
+            // Call completion handler on main thread
+            DispatchQueue.main.async {
+                completion(results)
+            }
         }
-        
-        return results
     }
     
     private func personalizeMessage(_ message: String, for name: String) -> String {
@@ -30,11 +39,10 @@ class EmailService {
             return false
         }
         
-        // Open the URL in Mail.app
-        NSWorkspace.shared.open(mailtoURL)
-        
-        // Small delay to prevent overwhelming the system
-        Thread.sleep(forTimeInterval: 0.5)
+        // Open the URL in Mail.app (must be called on main thread)
+        DispatchQueue.main.sync {
+            NSWorkspace.shared.open(mailtoURL)
+        }
         
         return true
     }

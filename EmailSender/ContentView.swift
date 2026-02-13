@@ -170,17 +170,17 @@ struct ContentView: View {
         }
         
         let emailService = EmailService()
-        let results = emailService.sendEmails(to: selectedRecipients)
-        
-        let successCount = results.filter { $0 }.count
-        let failureCount = results.count - successCount
-        
-        if failureCount == 0 {
-            alertMessage = "Successfully created \(successCount) emails in Mail.app"
-        } else {
-            alertMessage = "Created \(successCount) emails. Failed: \(failureCount)"
+        emailService.sendEmails(to: selectedRecipients) { results in
+            let successCount = results.filter { $0 }.count
+            let failureCount = results.count - successCount
+            
+            if failureCount == 0 {
+                self.alertMessage = "Successfully created \(successCount) emails in Mail.app"
+            } else {
+                self.alertMessage = "Created \(successCount) emails. Failed: \(failureCount)"
+            }
+            self.showAlert = true
         }
-        showAlert = true
     }
 }
 
