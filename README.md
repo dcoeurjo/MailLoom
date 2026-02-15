@@ -56,18 +56,3 @@ Hi {{name}},
 
 Thanks for your work at {{company}}.
 ```
-
-## Architecture
-
-- **EmailSenderApp.swift**: App entry point
-- **ContentView.swift**: Two-step UI flow (import + compose)
-- **SpreadsheetParser.swift**: CSV parsing and header mapping
-- **EmailService.swift**: Mail.app integration using mailto URLs
-
-## Security
-
-The app uses App Sandbox with the following capabilities:
-
-- Read-only access to user-selected files
-- Network client access (for mailto URLs)
-
