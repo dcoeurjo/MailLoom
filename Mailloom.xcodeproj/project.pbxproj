@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1A0000001 /* EmailSenderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002 /* EmailSenderApp.swift */; };
+		1A0000001 /* MailLoomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000002 /* MailLoomApp.swift */; };
 		1A0000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000004 /* ContentView.swift */; };
 		1A0000005 /* EmailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000006 /* EmailService.swift */; };
 		1A0000007 /* SpreadsheetParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000008 /* SpreadsheetParser.swift */; };
@@ -15,12 +15,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1A0000002 /* EmailSenderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSenderApp.swift; sourceTree = "<group>"; };
+		1A0000002 /* MailLoomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailLoomApp.swift; sourceTree = "<group>"; };
 		1A0000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1A0000006 /* EmailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailService.swift; sourceTree = "<group>"; };
 		1A0000008 /* SpreadsheetParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpreadsheetParser.swift; sourceTree = "<group>"; };
 		1A000000A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		1A000000D /* Mailloom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mailloom.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A000000D /* MailLoom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MailLoom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A000000E /* Mailloom.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Mailloom.entitlements; sourceTree = "<group>"; };
 		71C15D482F41F29D00333D15 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		71C15D4C2F41FEE300333D15 /* Mailloom.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Mailloom.xcodeproj; sourceTree = "<group>"; };
@@ -50,7 +50,7 @@
 		1A0000011 /* Mailloom */ = {
 			isa = PBXGroup;
 			children = (
-				1A0000002 /* EmailSenderApp.swift */,
+				1A0000002 /* MailLoomApp.swift */,
 				1A0000004 /* ContentView.swift */,
 				1A0000006 /* EmailService.swift */,
 				1A0000008 /* SpreadsheetParser.swift */,
@@ -64,7 +64,7 @@
 		1A0000012 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1A000000D /* Mailloom.app */,
+				1A000000D /* MailLoom.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -96,9 +96,9 @@
 			);
 			dependencies = (
 			);
-			name = Mailloom;
-			productName = Mailloom;
-			productReference = 1A000000D /* Mailloom.app */;
+			name = MailLoom;
+			productName = MailLoom;
+			productReference = 1A000000D /* MailLoom.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -159,7 +159,7 @@
 				1A0000003 /* ContentView.swift in Sources */,
 				1A0000005 /* EmailService.swift in Sources */,
 				1A0000007 /* SpreadsheetParser.swift in Sources */,
-				1A0000001 /* EmailSenderApp.swift in Sources */,
+				1A0000001 /* MailLoomApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,14 +290,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = SendCraft/Mailloom.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Mailloom/Mailloom.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Mailloom/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Mailloom;
+				INFOPLIST_KEY_CFBundleDisplayName = MailLoom;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -318,14 +318,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = SendCraft/Mailloom.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Mailloom/Mailloom.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Mailloom/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Mailloom;
+				INFOPLIST_KEY_CFBundleDisplayName = MailLoom;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (

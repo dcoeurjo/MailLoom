@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct MailloomApp: App {
+struct MailLoomApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

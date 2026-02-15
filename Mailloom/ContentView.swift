@@ -53,7 +53,7 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 20) {
             // Header
-            Text("Mailloom")
+            Text("MailLoom")
                 .font(.largeTitle)
                 .bold()
                 .padding(.top)
@@ -84,7 +84,7 @@ struct ContentView: View {
             Spacer()
         }
         .frame(width: flowStep == .composeStep ? 900 : 700, height: flowStep == .composeStep ? 720 : 400)
-        .alert("Mailloom", isPresented: $showAlert) {
+        .alert("MailLoom", isPresented: $showAlert) {
             Button("OK", role: .cancel) { }
         } message: {
             Text(alertMessage)
