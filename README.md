@@ -7,7 +7,7 @@ name,email,company,message
 Jane Doe,jane.doe@example.com,Acme,Hello {{name}} from {{company}}, Greetings!
 John Doe,john.doe@example.com,Acme,Hello {{name}} from {{company}} !
 ```
-and the app generates draft emails you can double check, replacing the placeholder but the associated values.
+and the app generates draft emails you can double-check before sending, replacing the placeholder but the associated values.
 
 ![](snapshot.png)
 ## Features
@@ -15,6 +15,7 @@ and the app generates draft emails you can double check, replacing the placehold
 - **CSV Import**: Import recipient data from CSV files with a selectable delimiter
 - **Header-Based Parsing**: Columns can be in any order as long as `name`, `email`, and `message` are present. Extra headers can be used in the email templates.
 - **Message Personalization**: Use `{{header}}` placeholders (e.g., `{{name}}`, `{{blop}}`)
+- **Global message**: You can use the same messge template for all recipients
 - **Subject + CC**: Global subject and CC list with placeholder support
 - **Two-Step Flow**: Import + stats first, compose and review recipients second
 - **Mail.app Integration**: Creates draft emails in Mail.app for review before sending
