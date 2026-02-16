@@ -7,7 +7,7 @@
 MailLoom(beta) is a simple macOS app that lets you create personalized email drafts in Mail.app using a CSV file. For example, your CSV might look like this:
 ```csv
 name,email,company,message
-Jane Doe,jane.doe@example.com,Acme,Hello {{name}} from {{company}}, Greetings!
+Jane Doe,jane.doe@example.com,Acme,Hello {{name}} from {{company}} Greetings!
 John Doe,john.doe@example.com,Acme,Hello {{name}} from {{company}} !
 ```
 
