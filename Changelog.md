@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- In step 2 (Compose), added a recipients bulk-selection button to `Select all` / `Unselect all` next to the recipients header.
+
+## [0.1] - 2026-03-01
+
 - First-step flow now asks for message mode: `Global message` vs `Per recipient`.
 - In `Per recipient` mode, `message` header selection is required in step 1.
 - In `Global message` mode, only `email` header is required in step 1.

@@ -1,6 +1,8 @@
 # MailLoom
 ![](icon-small.png)
 
+Current version: `0.1`
+
 
 [![Xcode - Build and Analyze](https://github.com/dcoeurjo/MailLoom/actions/workflows/objective-c-xcode.yml/badge.svg)](https://github.com/dcoeurjo/MailLoom/actions/workflows/objective-c-xcode.yml)
 

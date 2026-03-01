@@ -332,7 +332,30 @@ private struct ImportView: View {
     let canProceed: Bool
     let onImport: (Result<[URL], Error>) -> Void
     let onProceed: () -> Void
-    
+
+    private var delimiterValue: String {
+        switch delimiterOption {
+        case .comma:
+            return ","
+        case .semicolon:
+            return ";"
+        case .tab:
+            return "\\t"
+        case .custom:
+            let trimmed = customDelimiter.trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.isEmpty ? "(invalid)" : trimmed
+        }
+    }
+
+    private var messageModeValue: String {
+        switch messageMode {
+        case .global:
+            return "global"
+        case .perRecipient:
+            return "per_recipient"
+        }
+    }
+
     var body: some View {
         VStack(spacing: 20) {
             HStack(alignment: .top, spacing: 12) {
@@ -424,14 +447,30 @@ private struct ImportView: View {
                 .padding(.horizontal)
             }
             
-            VStack(alignment: .leading, spacing: 10) {
+            GroupBox {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Rows parsed")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("\(parsedEntriesCount)")
+                            .font(.headline)
+                    }
+
+                    HStack {
+                        Text("Headers detected")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text(parsedHeaders.isEmpty ? "-" : parsedHeaders.joined(separator: ", "))
+                            .font(.subheadline)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+            } label: {
                 Text("Import Summary")
-                    .font(.title2)
-                    .bold()
-                Text("Parsed headers: \(parsedHeaders.isEmpty ? "-" : parsedHeaders.joined(separator: ", "))")
-                    .font(.title3)
-                Text("Number of entries parsed: \(parsedEntriesCount)")
-                    .font(.title3)
+                    .font(.headline)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
@@ -482,6 +521,14 @@ private struct ComposeView: View {
             return "-"
         }
         return availableHeaders.map { "{{\($0)}}" }.joined(separator: ", ")
+    }
+
+    private var selectedCount: Int {
+        recipients.filter { $0.selected }.count
+    }
+
+    private var allRecipientsSelected: Bool {
+        !recipients.isEmpty && selectedCount == recipients.count
     }
     
     var body: some View {
@@ -540,8 +587,15 @@ private struct ComposeView: View {
                 
                 // Recipients List
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Recipients (\(recipients.filter { $0.selected }.count) selected):")
-                        .font(.headline)
+                    HStack {
+                        Text("Recipients (\(selectedCount) selected):")
+                            .font(.headline)
+                        Spacer()
+                        Button(allRecipientsSelected ? "Unselect all" : "Select all") {
+                            setAllRecipientsSelected(!allRecipientsSelected)
+                        }
+                        .buttonStyle(.bordered)
+                    }
                     
                     ScrollView {
                         VStack(spacing: 10) {
@@ -585,6 +639,12 @@ private struct ComposeView: View {
     private func applyGlobalMessage() {
         for index in recipients.indices {
             recipients[index].message = defaultMessage
+        }
+    }
+
+    private func setAllRecipientsSelected(_ isSelected: Bool) {
+        for index in recipients.indices {
+            recipients[index].selected = isSelected
         }
     }
 }
