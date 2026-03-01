@@ -19,11 +19,12 @@ MailLoom generates draft emails with the placeholders replaced by the correspond
 
 ## Features
 
-- **CSV Import**: Import recipient data from CSV files with a selectable delimiter. CSV Cells may include multiline text
-- **Header Mapping**: Columns can be in any order. After import, choose which header maps to `email` (required) and optionally `message`
+- **CSV Import**: Import recipient data from CSV files. Delimiter selection is available next to the import button (default: `;`). CSV cells may include multiline text
+- **Header Mapping + Message Mode**: Choose whether messages are global or per-recipient. `email` mapping is always required; `message` mapping is required only in per-recipient mode
 - **Message Personalization**: Use `{{header}}` placeholders (e.g., `{{name}}`, `{{blop}}`)
 - **Global message**: You can use the same message template for all recipients
 - **Header Helper in Compose**: While editing the default message, MailLoom shows available `{{header}}` placeholders
+- **Per-Recipient Preview**: In compose step, each recipient preview shows the message with placeholders already replaced
 - **Subject + CC**: Global subject and CC list with placeholder support
 - **Two-Step Flow**: Import + mapping first, compose and review recipients second
 - **Mail.app Integration**: Creates draft emails in Mail.app for review before sending
@@ -43,18 +44,23 @@ MailLoom generates draft emails with the placeholders replaced by the correspond
 ## Usage
 
 1. **Prepare your CSV file** with a header row.
-2. **Import the CSV** in MailLoom and choose the correct delimiter.
-3. **Choose header mapping** by selecting which parsed header should be used as `email` (required) and optionally `message`, then click **Proceed**.
-4. **Customize** the subject, CC list, and message template. Use placeholders like `{{name}}` or any header.
-5. **Review recipients** and select who to send.
-6. **Send emails** to create Mail.app drafts.
+2. **Import the CSV** in MailLoom. Delimiter is selected from the compact control next to the import button (default is `;`).
+3. **Choose message mode** in the first step:
+   - `Global message`: map `email` only.
+   - `Per recipient`: map both `email` and `message`.
+4. Click **Proceed**.
+5. **Customize** the subject, CC list, and message template. Use placeholders like `{{name}}` or any header.
+6. **Review recipients** and select who to send.
+7. **Send emails** to create Mail.app drafts.
 
 ## CSV Format
 
 - The first row must be a header row.
 - No specific header names are required.
 - Before proceeding, select a header for `email`.
-- The `message` header is optional.
+- Default CSV delimiter is `;` (semicolon).
+- If message mode is `Per recipient`, selecting a `message` header is required.
+- If message mode is `Global message`, `message` header mapping is not needed.
 - If a `name` column exists, it is used for recipient display/personalization; otherwise MailLoom derives a fallback name from the email local-part.
 - Additional headers are supported and can be referenced in the message template.
 

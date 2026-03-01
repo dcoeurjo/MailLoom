@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- First-step flow now asks for message mode: `Global message` vs `Per recipient`.
+- In `Per recipient` mode, `message` header selection is required in step 1.
+- In `Global message` mode, only `email` header is required in step 1.
+- Compose recipient rows now include a resolved preview with placeholders replaced using row fields.
+- Delimiter selection moved next to the import button in a compact control.
+- Default CSV delimiter changed to `;` (semicolon).
 - Header mapping now requires only `email`; `message` mapping is optional.
 - Switched CSV import to header mapping instead of fixed required header names.
 - Moved recipient creation to post-mapping and removed optional name-mapping UI.

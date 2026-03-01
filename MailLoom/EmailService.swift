@@ -30,7 +30,7 @@ class EmailService {
         }
     }
     
-    private func personalizeMessage(_ message: String, fields: [String: String]) -> String {
+    func personalizeMessage(_ message: String, fields: [String: String]) -> String {
         let normalizedFields = normalizeFieldMap(fields)
         return replacePlaceholders(in: message, fields: normalizedFields)
     }

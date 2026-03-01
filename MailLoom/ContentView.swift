@@ -33,6 +33,22 @@ private enum DelimiterOption: String, CaseIterable, Identifiable {
     }
 }
 
+private enum MessageMode: String, CaseIterable, Identifiable {
+    case global
+    case perRecipient
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .global:
+            return "Global message"
+        case .perRecipient:
+            return "Per recipient"
+        }
+    }
+}
+
 private struct ImportViewHeightPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
 
@@ -54,12 +70,13 @@ struct ContentView: View {
     @State private var isImporting = false
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var delimiterOption: DelimiterOption = .comma
+    @State private var delimiterOption: DelimiterOption = .semicolon
     @State private var customDelimiter: String = ""
     @State private var parsedHeaders: [String] = []
     @State private var importedRows: [[String: String]] = []
     @State private var selectedEmailHeader: String = ""
     @State private var selectedMessageHeader: String = ""
+    @State private var messageMode: MessageMode = .global
     @State private var importContentHeight: CGFloat = 0
     @State private var flowStep: FlowStep = .importStep
     
@@ -83,6 +100,7 @@ struct ContentView: View {
                     isImporting: $isImporting,
                     delimiterOption: $delimiterOption,
                     customDelimiter: $customDelimiter,
+                    messageMode: $messageMode,
                     parsedHeaders: parsedHeaders,
                     parsedEntriesCount: importedRows.count,
                     selectedEmailHeader: $selectedEmailHeader,
@@ -103,6 +121,7 @@ struct ContentView: View {
                 ComposeView(
                     recipients: $recipients,
                     parsedHeaders: parsedHeaders,
+                    messageMode: messageMode,
                     defaultMessage: $defaultMessage,
                     emailSubject: $emailSubject,
                     ccList: $ccList,
@@ -163,7 +182,11 @@ struct ContentView: View {
                 alertMessage = "No entries found in the file"
                 showAlert = true
             } else {
-                alertMessage = "Choose which header should be used as email (message is optional), then click Proceed"
+                if messageMode == .perRecipient {
+                    alertMessage = "Choose headers for email and message, then click Proceed"
+                } else {
+                    alertMessage = "Choose the email header, then click Proceed"
+                }
                 showAlert = false
             }
         } catch {
@@ -196,7 +219,9 @@ struct ContentView: View {
     }
 
     private var canProceedToCompose: Bool {
-        !importedRows.isEmpty && !selectedEmailHeader.isEmpty
+        !importedRows.isEmpty &&
+        !selectedEmailHeader.isEmpty &&
+        (messageMode == .global || !selectedMessageHeader.isEmpty)
     }
 
     private var currentWindowHeight: CGFloat {
@@ -208,7 +233,11 @@ struct ContentView: View {
 
     private func proceedToCompose() {
         guard canProceedToCompose else {
-            alertMessage = "Please choose an email header before proceeding"
+            if messageMode == .perRecipient {
+                alertMessage = "Please choose email and message headers before proceeding"
+            } else {
+                alertMessage = "Please choose an email header before proceeding"
+            }
             showAlert = true
             return
         }
@@ -216,7 +245,8 @@ struct ContentView: View {
         let mappedRecipients = buildRecipients(
             rows: importedRows,
             emailHeader: selectedEmailHeader,
-            messageHeader: selectedMessageHeader
+            messageHeader: selectedMessageHeader,
+            messageMode: messageMode
         )
 
         if mappedRecipients.isEmpty {
@@ -226,7 +256,7 @@ struct ContentView: View {
         }
 
         recipients = mappedRecipients
-        if let firstMessage = mappedRecipients.first?.message, !firstMessage.isEmpty {
+        if messageMode == .perRecipient, let firstMessage = mappedRecipients.first?.message, !firstMessage.isEmpty {
             defaultMessage = firstMessage
         }
         flowStep = .composeStep
@@ -239,7 +269,8 @@ struct ContentView: View {
     private func buildRecipients(
         rows: [[String: String]],
         emailHeader: String,
-        messageHeader: String
+        messageHeader: String,
+        messageMode: MessageMode
     ) -> [Recipient] {
         var mapped: [Recipient] = []
 
@@ -249,7 +280,13 @@ struct ContentView: View {
                 continue
             }
 
-            let message = messageHeader.isEmpty ? "" : row[messageHeader, default: ""]
+            let message: String
+            switch messageMode {
+            case .global:
+                message = ""
+            case .perRecipient:
+                message = row[messageHeader, default: ""]
+            }
             let selectedName = row["name", default: ""].trimmingCharacters(in: .whitespacesAndNewlines)
             let fallbackName = String(email.split(separator: "@").first ?? Substring(email))
             let name = selectedName.isEmpty ? fallbackName : selectedName
@@ -287,6 +324,7 @@ private struct ImportView: View {
     @Binding var isImporting: Bool
     @Binding var delimiterOption: DelimiterOption
     @Binding var customDelimiter: String
+    @Binding var messageMode: MessageMode
     let parsedHeaders: [String]
     let parsedEntriesCount: Int
     @Binding var selectedEmailHeader: String
@@ -297,40 +335,63 @@ private struct ImportView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Button(action: { isImporting = true }) {
-                HStack {
-                    Image(systemName: "doc.text")
-                    Text("Import Spreadsheet (CSV)")
+            HStack(alignment: .top, spacing: 12) {
+                Button(action: { isImporting = true }) {
+                    HStack {
+                        Image(systemName: "doc.text")
+                        Text("Import Spreadsheet (CSV)")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(8)
-            }
-            .fileImporter(
-                isPresented: $isImporting,
-                allowedContentTypes: [.commaSeparatedText, .text],
-                allowsMultipleSelection: false
-            ) { result in
-                onImport(result)
+                .fileImporter(
+                    isPresented: $isImporting,
+                    allowedContentTypes: [.commaSeparatedText, .text],
+                    allowsMultipleSelection: false
+                ) { result in
+                    onImport(result)
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Delimiter")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    Picker("Delimiter", selection: $delimiterOption) {
+                        ForEach(DelimiterOption.allCases) { option in
+                            Text(option.label).tag(option)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                }
+                .frame(width: 180)
             }
             .padding(.horizontal)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("CSV Delimiter")
-                    .font(.headline)
-                Picker("Delimiter", selection: $delimiterOption) {
-                    ForEach(DelimiterOption.allCases) { option in
-                        Text(option.label).tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
-                
-                if delimiterOption == .custom {
+
+            if delimiterOption == .custom {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Custom delimiter")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     TextField("Enter a single delimiter character", text: $customDelimiter)
                         .textFieldStyle(.roundedBorder)
                 }
+                .padding(.horizontal)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Message Mode")
+                    .font(.headline)
+                Picker("Message mode", selection: $messageMode) {
+                    ForEach(MessageMode.allCases) { mode in
+                        Text(mode.label).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
             }
             .padding(.horizontal)
 
@@ -348,13 +409,15 @@ private struct ImportView: View {
                     }
                     .pickerStyle(.menu)
 
-                    Picker("Message header (optional)", selection: $selectedMessageHeader) {
-                        Text("None").tag("")
-                        ForEach(parsedHeaders, id: \.self) { header in
-                            Text(header).tag(header)
+                    if messageMode == .perRecipient {
+                        Picker("Message header", selection: $selectedMessageHeader) {
+                            Text("Select message header").tag("")
+                            ForEach(parsedHeaders, id: \.self) { header in
+                                Text(header).tag(header)
+                            }
                         }
+                        .pickerStyle(.menu)
                     }
-                    .pickerStyle(.menu)
 
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -393,12 +456,12 @@ private struct ImportView: View {
 private struct ComposeView: View {
     @Binding var recipients: [Recipient]
     let parsedHeaders: [String]
+    let messageMode: MessageMode
     @Binding var defaultMessage: String
     @Binding var emailSubject: String
     @Binding var ccList: String
     let onBack: () -> Void
     let onSend: () -> Void
-    @State private var useDefaultMessage = false
 
     private var availableHeaders: [String] {
         let csvHeaderSet = Set(parsedHeaders)
@@ -449,33 +512,28 @@ private struct ComposeView: View {
                 
                 // Default Message Editor
                 VStack(alignment: .leading, spacing: 8) {
-                    Toggle("Use default message template (and override per-recipient {{message}} if any)", isOn: $useDefaultMessage)
-                        .font(.headline)
-                        .onChange(of: useDefaultMessage) { isEnabled in
-                            if isEnabled {
-                                applyDefaultMessage()
-                            }
-                        }
+                    if messageMode == .global {
+                        Text("Global Message Template")
+                            .font(.headline)
 
-                    if useDefaultMessage {
                         Text("Available headers: \(availableHeadersDisplay)")
                             .font(.caption)
                             .foregroundColor(.secondary)
-
-                        Text("Warning: This will override any per row {{message}} value if present.")
-                            .font(.caption)
-                            .foregroundColor(.orange)
 
                         TextEditor(text: $defaultMessage)
                             .frame(height: 140)
                             .border(Color.gray.opacity(0.5))
                             .onChange(of: defaultMessage) { _ in
-                                applyDefaultMessage()
+                                applyGlobalMessage()
                             }
 
                         Text("Use {{header}} placeholders like {{name}} in the message")
                             .font(.caption)
                             .foregroundColor(.gray)
+                    } else {
+                        Text("Per-recipient messages are loaded from the selected CSV message header.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
                 .padding(.horizontal)
@@ -488,7 +546,10 @@ private struct ComposeView: View {
                     ScrollView {
                         VStack(spacing: 10) {
                             ForEach($recipients) { $recipient in
-                                RecipientRow(recipient: $recipient)
+                                RecipientRow(
+                                    recipient: $recipient,
+                                    allowMessageEditing: messageMode == .perRecipient
+                                )
                             }
                         }
                     }
@@ -514,9 +575,14 @@ private struct ComposeView: View {
             }
             .padding(.bottom)
         }
+        .onAppear {
+            if messageMode == .global {
+                applyGlobalMessage()
+            }
+        }
     }
 
-    private func applyDefaultMessage() {
+    private func applyGlobalMessage() {
         for index in recipients.indices {
             recipients[index].message = defaultMessage
         }
@@ -525,7 +591,12 @@ private struct ComposeView: View {
 
 struct RecipientRow: View {
     @Binding var recipient: Recipient
+    let allowMessageEditing: Bool
     @State private var isExpanded = false
+
+    private var personalizedMessage: String {
+        EmailService().personalizeMessage(recipient.message, fields: recipient.fields)
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -550,13 +621,25 @@ struct RecipientRow: View {
             
             if isExpanded {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Message:")
+                    if allowMessageEditing {
+                        Text("Template:")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+
+                        TextEditor(text: $recipient.message)
+                            .frame(height: 80)
+                            .border(Color.gray.opacity(0.5))
+                    }
+
+                    Text("Preview:")
                         .font(.caption)
                         .foregroundColor(.gray)
-                    
-                    TextEditor(text: $recipient.message)
-                        .frame(height: 80)
-                        .border(Color.gray.opacity(0.5))
+
+                    Text(personalizedMessage)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(8)
+                        .background(Color.gray.opacity(0.08))
+                        .cornerRadius(6)
                 }
             }
         }
